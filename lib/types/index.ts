@@ -4,7 +4,7 @@ import type {
   BookLocation,
   LocationType,
   UserBook,
-} from "@/app/generated/prisma"
+} from "@/app/generated/prisma/client"
 
 // ─────────────────────────────────────────────
 // Composed DB types
@@ -47,7 +47,7 @@ export type MapMarkerData = {
 }
 
 // ─────────────────────────────────────────────
-// Google Books API types
+// Google Books API raw types
 // ─────────────────────────────────────────────
 
 export type GoogleBooksVolume = {
@@ -59,20 +59,61 @@ export type GoogleBooksVolume = {
     description?: string
     pageCount?: number
     publishedDate?: string
+    publisher?: string
+    language?: string
+    categories?: string[]
+    averageRating?: number
+    ratingsCount?: number
     imageLinks?: {
+      extraLarge?: string
+      large?: string
+      medium?: string
+      small?: string
       thumbnail?: string
       smallThumbnail?: string
     }
     industryIdentifiers?: Array<{
-      type: string
+      type: "ISBN_10" | "ISBN_13" | "ISSN" | "OTHER"
       identifier: string
     }>
+    previewLink?: string
+    infoLink?: string
   }
 }
 
 export type GoogleBooksSearchResponse = {
   totalItems: number
   items?: GoogleBooksVolume[]
+}
+
+// ─────────────────────────────────────────────
+// Normalized internal types
+// ─────────────────────────────────────────────
+
+/** Normalized book derived from a Google Books volume. All optional fields are
+ *  explicit `null` (never `undefined`) so callers don't need nullish checks. */
+export type NormalizedBook = {
+  googleId: string
+  title: string
+  subtitle: string | null
+  isbn: string | null
+  description: string | null
+  pageCount: number | null
+  imageUrl: string | null
+  publishedAt: string | null
+  publisher: string | null
+  language: string | null
+  categories: string[]
+  averageRating: number | null
+  ratingsCount: number | null
+  authorName: string
+}
+
+/** Author derived by aggregating volumes returned by the Google Books search. */
+export type NormalizedAuthor = {
+  name: string
+  bookCount: number
+  sampleBooks: NormalizedBook[]
 }
 
 // ─────────────────────────────────────────────

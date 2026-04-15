@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 
 const PUBLIC_ROUTES = new Set(["/", "/login", "/register"])
+const AUTH_ROUTES = new Set(["/login", "/register"])
 const PUBLIC_API_PREFIXES = ["/api/auth"]
 
 export default auth((req) => {
@@ -12,6 +13,10 @@ export default auth((req) => {
     nextUrl.pathname.startsWith(prefix)
   )
   if (isPublicApiRoute) return NextResponse.next()
+
+  if (isLoggedIn && AUTH_ROUTES.has(nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl.origin))
+  }
 
   const isPublicRoute = PUBLIC_ROUTES.has(nextUrl.pathname)
   if (isPublicRoute) return NextResponse.next()
