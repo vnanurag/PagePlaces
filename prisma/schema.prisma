@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────
+
+enum LocationType {
+  PURCHASED
+  RECEIVED
+  GIFTED
+  READ
+  OTHER
+}
+
+// ─────────────────────────────────────────────
+// Models
+// ─────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userBooks UserBook[]
+
+  @@map("users")
+}
+
+model Author {
+  id          String   @id @default(cuid())
+  name        String
+  googleId    String?  @unique
+  description String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  books Book[]
+
+  @@index([name])
+  @@map("authors")
+}
+
+model Book {
+  id          String    @id @default(cuid())
+  title       String
+  subtitle    String?
+  isbn        String?   @unique
+  googleId    String?   @unique
+  description String?
+  pageCount   Int?
+  imageUrl    String?
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId String
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  userBooks UserBook[]
+
+  @@index([authorId])
+  @@index([title])
+  @@map("books")
+}
+
+/// A user's saved copy of a book, acting as the pivot
+/// between users and books (and the anchor for locations).
+model UserBook {
+  id        String   @id @default(cuid())
+  notes     String?
+  rating    Int?     // 1–5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bookId String
+  book   Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  locations BookLocation[]
+
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@map("user_books")
+}
+
+/// A geographic point attached to a user's book entry.
+model BookLocation {
+  id           String       @id @default(cuid())
+  latitude     Float
+  longitude    Float
+  address      String?
+  city         String?
+  country      String?
+  notes        String?
+  locationType LocationType
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  userBookId String
+  userBook   UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@index([userBookId])
+  @@map("book_locations")
+}
