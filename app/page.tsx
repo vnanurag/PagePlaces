@@ -28,10 +28,10 @@ export default async function Home() {
       {/* ── Nav ── */}
       <header className="shrink-0 border-b border-border bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-          <span className="flex items-center gap-1.5 text-sm font-semibold tracking-tight">
+          <Link href="/" className="flex items-center gap-1.5 text-sm font-semibold tracking-tight hover:opacity-80 transition-opacity">
             <BookMarked className="size-4" aria-hidden="true" />
             PagePlaces
-          </span>
+          </Link>
           <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Open app →
           </Link>
