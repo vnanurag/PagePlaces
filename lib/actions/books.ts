@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { prisma } from "@/lib/db"
 import type { NormalizedBook } from "@/lib/types"
 
@@ -57,6 +58,8 @@ export async function saveBookAction(book: NormalizedBook): Promise<SaveBookResu
       select: { id: true },
     })
 
+    revalidatePath("/library")
+    revalidatePath("/dashboard")
     return { success: true, userBookId: userBook.id }
   } catch (e) {
     console.error("[saveBookAction]", e)
