@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { Suspense, useActionState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
@@ -8,7 +8,7 @@ import { loginAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
   const searchParams = useSearchParams()
   const registered = searchParams.get("registered") === "true"
@@ -100,5 +100,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
