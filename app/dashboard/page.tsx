@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { BookSearch } from "@/components/dashboard/BookSearch"
+import { AUTHOR_NAME } from "@/lib/constants"
 
 export default async function DashboardPage() {
   const userBooks = await prisma.userBook.findMany({
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <BookSearch initialSavedMap={savedMap} />
+        <BookSearch initialSavedMap={savedMap} defaultQuery={AUTHOR_NAME} defaultMode="author" />
       </main>
     </div>
   )

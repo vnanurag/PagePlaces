@@ -38,11 +38,13 @@ interface SavedEntry {
 interface BookSearchProps {
   /** googleId → userBookId for books already in the library */
   initialSavedMap: Record<string, string>
+  defaultQuery?: string
+  defaultMode?: SearchMode
 }
 
-export function BookSearch({ initialSavedMap }: BookSearchProps) {
-  const [mode, setMode] = useState<SearchMode>("author")
-  const [query, setQuery] = useState("")
+export function BookSearch({ initialSavedMap, defaultQuery = "", defaultMode = "author" }: BookSearchProps) {
+  const [mode, setMode] = useState<SearchMode>(defaultMode)
+  const [query, setQuery] = useState(defaultQuery)
   const [authorResults, setAuthorResults] = useState<NormalizedAuthor[]>([])
   const [bookResults, setBookResults] = useState<NormalizedBook[]>([])
   const [status, setStatus] = useState<SearchStatus>("idle")
