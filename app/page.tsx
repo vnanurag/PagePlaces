@@ -70,22 +70,13 @@ export default async function Home() {
             Build your personal library and pin the exact spots where you
             bought, received, gifted, or read each book.
           </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            {isLoggedIn ? (
+          {isLoggedIn && (
+            <div className="mt-5 flex justify-center">
               <Link href="/dashboard" className={buttonVariants({ size: "sm" })}>
                 Go to dashboard <ArrowRight className="size-3.5" />
               </Link>
-            ) : (
-              <>
-                <Link href="/register" className={buttonVariants({ size: "sm" })}>
-                  Get started free <ArrowRight className="size-3.5" />
-                </Link>
-                <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>
-                  Sign in
-                </Link>
-              </>
-            )}
-          </div>
+            </div>
+          )}
         </section>
 
         {/* ── Features ── */}
