@@ -24,7 +24,7 @@ import type { ApiResponse, NormalizedAuthor, NormalizedBook } from "@/lib/types"
 // ─────────────────────────────────────────────
 
 type SearchMode = "author" | "title"
-type SearchSource = "openlibrary" | "google"
+type SearchSource = "isbndb" | "google"
 type SearchStatus = "idle" | "loading" | "error" | "done"
 type SaveStatus = "idle" | "saving" | "error"
 
@@ -43,7 +43,7 @@ interface BookSearchProps {
 
 export function BookSearch({ initialSavedMap }: BookSearchProps) {
   const [mode, setMode] = useState<SearchMode>("author")
-  const [source, setSource] = useState<SearchSource>("openlibrary")
+  const [source, setSource] = useState<SearchSource>("isbndb")
   const [query, setQuery] = useState("")
   const [authorResults, setAuthorResults] = useState<NormalizedAuthor[]>([])
   const [bookResults, setBookResults] = useState<NormalizedBook[]>([])
@@ -75,9 +75,8 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
     setErrorMsg(null)
 
     try {
-      const isOL = currentSource === "openlibrary"
-      const url = isOL
-        ? `/api/open-library?mode=${currentMode}&q=${encodeURIComponent(q.trim())}&maxResults=20`
+      const url = currentSource === "isbndb"
+        ? `/api/isbndb?mode=${currentMode}&q=${encodeURIComponent(q.trim())}&maxResults=20`
         : currentMode === "author"
           ? `/api/google-books/authors?q=${encodeURIComponent(q.trim())}`
           : `/api/google-books/search?q=${encodeURIComponent(q.trim())}&maxResults=20`
@@ -191,7 +190,7 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
 
         {/* Source toggle */}
         <div className="flex shrink-0 rounded-lg border border-border bg-muted/50 p-0.5">
-          {(["openlibrary", "google"] as SearchSource[]).map((s) => (
+          {(["isbndb", "google"] as SearchSource[]).map((s) => (
             <button
               key={s}
               onClick={() => handleSourceChange(s)}
@@ -201,7 +200,7 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {s === "openlibrary" ? "Open Library" : "Google Books"}
+              {s === "isbndb" ? "ISBNdb" : "Google Books"}
             </button>
           ))}
         </div>
