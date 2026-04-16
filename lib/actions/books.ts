@@ -62,7 +62,8 @@ export async function saveBookAction(book: NormalizedBook): Promise<SaveBookResu
     revalidatePath("/dashboard")
     return { success: true, userBookId: userBook.id }
   } catch (e) {
-    console.error("[saveBookAction]", e)
-    return { success: false, error: "Failed to save book. Please try again." }
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error("[saveBookAction]", msg)
+    return { success: false, error: msg }
   }
 }
