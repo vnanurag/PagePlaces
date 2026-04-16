@@ -145,9 +145,10 @@ export async function searchAuthors(
   query: string,
   options?: SearchOptions
 ): Promise<NormalizedAuthor[]> {
-  // inauthor: without quotes — scoped to the author field but permissive on
-  // partial name matches. Avoids returning biographies *about* the author.
-  const volumes = await fetchVolumes(`inauthor:${query}`, {
+  // General query across all fields — casts the widest net so less-known
+  // authors with few indexed books are still surfaced. Results are still
+  // grouped by volumeInfo.authors, so unrelated works fall under different names.
+  const volumes = await fetchVolumes(query, {
     maxResults: 40,
     printType: "books",
     orderBy: "newest",
