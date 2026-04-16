@@ -1,5 +1,4 @@
 import type { NextRequest } from "next/server"
-import { verifySession } from "@/lib/dal"
 import { searchAuthors, searchBooksByAuthor } from "@/lib/google-books"
 
 /**
@@ -10,8 +9,6 @@ import { searchAuthors, searchBooksByAuthor } from "@/lib/google-books"
  *   → NormalizedBook[]  (all books by that exact author)
  */
 export async function GET(req: NextRequest) {
-  await verifySession()
-
   const { searchParams } = req.nextUrl
   const q = searchParams.get("q")?.trim()
   const booksFor = searchParams.get("books")?.trim()

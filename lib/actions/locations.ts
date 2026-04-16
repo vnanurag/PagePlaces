@@ -1,6 +1,5 @@
 "use server"
 
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { addLocationSchema } from "@/lib/validations/books"
 import type { LocationPoint } from "@/components/book/BookDetailMap"
@@ -53,13 +52,11 @@ export async function addLocationAction(
   userBookId: string,
   data: unknown
 ): Promise<LocationActionResult> {
-  const session = await verifySession()
-
   const parsed = addLocationSchema.safeParse(data)
   if (!parsed.success) return { success: false, error: "Invalid location data." }
 
   const owned = await prisma.userBook.findFirst({
-    where: { id: userBookId, userId: session.user.id },
+    where: { id: userBookId },
     select: { id: true },
   })
   if (!owned) return { success: false, error: "Book not found." }
@@ -83,16 +80,11 @@ export async function updateLocationAction(
   userBookId: string,
   data: unknown
 ): Promise<LocationActionResult> {
-  const session = await verifySession()
-
   const parsed = addLocationSchema.safeParse(data)
   if (!parsed.success) return { success: false, error: "Invalid location data." }
 
   const existing = await prisma.bookLocation.findFirst({
-    where: {
-      id: locationId,
-      userBook: { id: userBookId, userId: session.user.id },
-    },
+    where: { id: locationId, userBook: { id: userBookId } },
     select: { id: true },
   })
   if (!existing) return { success: false, error: "Location not found." }
@@ -116,13 +108,8 @@ export async function deleteLocationAction(
   locationId: string,
   userBookId: string
 ): Promise<DeleteLocationResult> {
-  const session = await verifySession()
-
   const existing = await prisma.bookLocation.findFirst({
-    where: {
-      id: locationId,
-      userBook: { id: userBookId, userId: session.user.id },
-    },
+    where: { id: locationId, userBook: { id: userBookId } },
     select: { id: true },
   })
   if (!existing) return { success: false, error: "Location not found." }

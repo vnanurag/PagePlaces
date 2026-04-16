@@ -1,12 +1,10 @@
 import type { NextRequest } from "next/server"
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { addLocationSchema } from "@/lib/validations/books"
 
 type Params = { params: Promise<{ id: string; locationId: string }> }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const session = await verifySession()
   const { id, locationId } = await params
 
   const body = await req.json()
@@ -16,10 +14,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   const location = await prisma.bookLocation.findFirst({
-    where: {
-      id: locationId,
-      userBook: { id, userId: session.user.id },
-    },
+    where: { id: locationId, userBook: { id } },
     select: { id: true },
   })
 
@@ -36,14 +31,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  const session = await verifySession()
   const { id, locationId } = await params
 
   const location = await prisma.bookLocation.findFirst({
-    where: {
-      id: locationId,
-      userBook: { id, userId: session.user.id },
-    },
+    where: { id: locationId, userBook: { id } },
     select: { id: true },
   })
 

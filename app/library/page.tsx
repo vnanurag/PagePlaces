@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { BookGrid, BookGridSkeleton, type LibraryBook } from "@/components/library/BookGrid"
@@ -9,14 +8,9 @@ import { BookGrid, BookGridSkeleton, type LibraryBook } from "@/components/libra
 // ─────────────────────────────────────────────
 
 export default async function LibraryPage() {
-  const session = await verifySession()
-
   return (
     <div className="flex flex-1 flex-col">
-      <AppHeader
-        userEmail={session.user.email ?? ""}
-        userName={session.user.name}
-      />
+      <AppHeader />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5">
         <div className="mb-5">
@@ -27,7 +21,7 @@ export default async function LibraryPage() {
         </div>
 
         <Suspense fallback={<BookGridSkeleton />}>
-          <LibraryBooks userId={session.user.id} />
+          <LibraryBooks />
         </Suspense>
       </main>
     </div>
@@ -38,9 +32,8 @@ export default async function LibraryPage() {
 // Data layer (separate async component for Suspense)
 // ─────────────────────────────────────────────
 
-async function LibraryBooks({ userId }: { userId: string }) {
+async function LibraryBooks() {
   const rows = await prisma.userBook.findMany({
-    where: { userId },
     include: {
       book: { include: { author: true } },
       _count: { select: { locations: true } },

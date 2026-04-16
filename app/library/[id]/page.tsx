@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation"
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { AppHeader } from "@/components/layout/AppHeader"
 import {
@@ -11,11 +10,10 @@ import type { LocationPoint } from "@/components/book/BookDetailMap"
 type Params = { params: Promise<{ id: string }> }
 
 export default async function BookDetailPage({ params }: Params) {
-  const session = await verifySession()
   const { id } = await params
 
   const userBook = await prisma.userBook.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id },
     include: {
       book: { include: { author: true } },
       locations: { orderBy: { createdAt: "desc" } },
@@ -50,10 +48,7 @@ export default async function BookDetailPage({ params }: Params) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <AppHeader
-        userEmail={session.user.email ?? ""}
-        userName={session.user.name}
-      />
+      <AppHeader />
       <BookDetailClient
         userBookId={id}
         book={bookInfo}

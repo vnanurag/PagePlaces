@@ -1,6 +1,5 @@
 "use server"
 
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import type { NormalizedBook } from "@/lib/types"
 
@@ -16,8 +15,6 @@ function parsePublishedAt(value: string | null): Date | null {
 }
 
 export async function saveBookAction(book: NormalizedBook): Promise<SaveBookResult> {
-  const session = await verifySession()
-
   try {
     // 1. Resolve or create author by name
     let author = await prisma.author.findFirst({
@@ -52,11 +49,11 @@ export async function saveBookAction(book: NormalizedBook): Promise<SaveBookResu
       })
     }
 
-    // 3. Upsert userBook — idempotent, handles duplicates gracefully
+    // 3. Upsert userBook — idempotent, bookId is globally unique
     const userBook = await prisma.userBook.upsert({
-      where: { userId_bookId: { userId: session.user.id, bookId: dbBook.id } },
+      where: { bookId: dbBook.id },
       update: {},
-      create: { userId: session.user.id, bookId: dbBook.id },
+      create: { bookId: dbBook.id },
       select: { id: true },
     })
 

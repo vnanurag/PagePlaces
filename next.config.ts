@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "books.google.com" },
     ],
   },
-  serverExternalPackages: ["bcryptjs"],
+
 };
 
 export default nextConfig;

@@ -1,13 +1,9 @@
 import type { NextRequest } from "next/server"
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { createUserBookSchema } from "@/lib/validations/books"
 
 export async function GET() {
-  const session = await verifySession()
-
   const userBooks = await prisma.userBook.findMany({
-    where: { userId: session.user.id },
     include: {
       book: { include: { author: true } },
       locations: { orderBy: { createdAt: "desc" } },
@@ -19,8 +15,6 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await verifySession()
-
   try {
     const body = await req.json()
     const parsed = createUserBookSchema.safeParse(body)
@@ -79,13 +73,12 @@ export async function POST(req: NextRequest) {
 
     // 3. Upsert userBook — idempotent add to collection
     const userBook = await prisma.userBook.upsert({
-      where: { userId_bookId: { userId: session.user.id, bookId: book.id } },
+      where: { bookId: book.id },
       update: {
         ...(notes !== undefined && { notes }),
         ...(rating !== undefined && { rating }),
       },
       create: {
-        userId: session.user.id,
         bookId: book.id,
         notes: notes ?? null,
         rating: rating ?? null,

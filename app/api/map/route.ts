@@ -1,14 +1,8 @@
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import type { MapMarkerData } from "@/lib/types"
 
 export async function GET() {
-  const session = await verifySession()
-
   const locations = await prisma.bookLocation.findMany({
-    where: {
-      userBook: { userId: session.user.id },
-    },
     include: {
       userBook: {
         include: {

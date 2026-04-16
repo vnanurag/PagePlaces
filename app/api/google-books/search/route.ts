@@ -1,10 +1,7 @@
 import type { NextRequest } from "next/server"
-import { verifySession } from "@/lib/dal"
 import { searchBooks } from "@/lib/google-books"
 
 export async function GET(req: NextRequest) {
-  await verifySession()
-
   const { searchParams } = req.nextUrl
   const q = searchParams.get("q")?.trim()
   if (!q) {

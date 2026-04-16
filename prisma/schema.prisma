@@ -28,19 +28,6 @@ enum LocationType {
 // Models
 // ─────────────────────────────────────────────
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userBooks UserBook[]
-
-  @@map("users")
-}
-
 model Author {
   id          String   @id @default(cuid())
   name        String
@@ -72,15 +59,14 @@ model Book {
   authorId String
   author   Author @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
-  userBooks UserBook[]
+  userBook  UserBook?
 
   @@index([authorId])
   @@index([title])
   @@map("books")
 }
 
-/// A user's saved copy of a book, acting as the pivot
-/// between users and books (and the anchor for locations).
+/// A saved book entry (anchor for locations).
 model UserBook {
   id        String   @id @default(cuid())
   notes     String?
@@ -88,16 +74,11 @@ model UserBook {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  bookId String
-  book   Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId String @unique
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   locations BookLocation[]
 
-  @@unique([userId, bookId])
-  @@index([userId])
   @@map("user_books")
 }
 

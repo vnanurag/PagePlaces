@@ -1,16 +1,14 @@
 import type { NextRequest } from "next/server"
-import { verifySession } from "@/lib/dal"
 import { prisma } from "@/lib/db"
 import { addLocationSchema } from "@/lib/validations/books"
 
 type Params = { params: Promise<{ id: string }> }
 
 export async function GET(_req: NextRequest, { params }: Params) {
-  const session = await verifySession()
   const { id } = await params
 
   const owned = await prisma.userBook.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id },
     select: { id: true },
   })
 
@@ -27,7 +25,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 export async function POST(req: NextRequest, { params }: Params) {
-  const session = await verifySession()
   const { id } = await params
 
   const body = await req.json()
@@ -37,7 +34,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   const owned = await prisma.userBook.findFirst({
-    where: { id, userId: session.user.id },
+    where: { id },
     select: { id: true },
   })
 
