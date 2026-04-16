@@ -24,7 +24,6 @@ import type { ApiResponse, NormalizedAuthor, NormalizedBook } from "@/lib/types"
 // ─────────────────────────────────────────────
 
 type SearchMode = "author" | "title"
-type SearchSource = "isbndb" | "google"
 type SearchStatus = "idle" | "loading" | "error" | "done"
 type SaveStatus = "idle" | "saving" | "error"
 
@@ -43,7 +42,6 @@ interface BookSearchProps {
 
 export function BookSearch({ initialSavedMap }: BookSearchProps) {
   const [mode, setMode] = useState<SearchMode>("author")
-  const [source, setSource] = useState<SearchSource>("isbndb")
   const [query, setQuery] = useState("")
   const [authorResults, setAuthorResults] = useState<NormalizedAuthor[]>([])
   const [bookResults, setBookResults] = useState<NormalizedBook[]>([])
@@ -59,7 +57,7 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
-  const doSearch = useCallback(async (q: string, currentMode: SearchMode, currentSource: SearchSource) => {
+  const doSearch = useCallback(async (q: string, currentMode: SearchMode) => {
     if (q.trim().length < 2) {
       setAuthorResults([])
       setBookResults([])
@@ -75,11 +73,9 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
     setErrorMsg(null)
 
     try {
-      const url = currentSource === "isbndb"
-        ? `/api/isbndb?mode=${currentMode}&q=${encodeURIComponent(q.trim())}&maxResults=20`
-        : currentMode === "author"
-          ? `/api/google-books/authors?q=${encodeURIComponent(q.trim())}`
-          : `/api/google-books/search?q=${encodeURIComponent(q.trim())}&maxResults=20`
+      const url = currentMode === "author"
+        ? `/api/google-books/authors?q=${encodeURIComponent(q.trim())}`
+        : `/api/google-books/search?q=${encodeURIComponent(q.trim())}&maxResults=20`
 
       const res = await fetch(url, { signal: controller.signal })
       const json: ApiResponse<NormalizedAuthor[] | NormalizedBook[]> = await res.json()
@@ -107,23 +103,15 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => doSearch(query, mode, source), 400)
+    debounceRef.current = setTimeout(() => doSearch(query, mode), 400)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [query, mode, source, doSearch])
+  }, [query, mode, doSearch])
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
   // Reset results when mode switches
   const handleModeChange = (newMode: SearchMode) => {
     setMode(newMode)
-    setAuthorResults([])
-    setBookResults([])
-    setStatus(query.trim().length >= 2 ? "loading" : "idle")
-  }
-
-  // Reset results when source switches
-  const handleSourceChange = (newSource: SearchSource) => {
-    setSource(newSource)
     setAuthorResults([])
     setBookResults([])
     setStatus(query.trim().length >= 2 ? "loading" : "idle")
@@ -184,23 +172,6 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
               }`}
             >
               {m === "author" ? "By Author" : "By Title"}
-            </button>
-          ))}
-        </div>
-
-        {/* Source toggle */}
-        <div className="flex shrink-0 rounded-lg border border-border bg-muted/50 p-0.5">
-          {(["isbndb", "google"] as SearchSource[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => handleSourceChange(s)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
-                source === s
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {s === "isbndb" ? "ISBNdb" : "Google Books"}
             </button>
           ))}
         </div>

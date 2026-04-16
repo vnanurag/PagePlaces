@@ -122,8 +122,10 @@ export async function searchBooksByAuthor(
   authorName: string,
   options?: SearchOptions
 ): Promise<NormalizedBook[]> {
-  const volumes = await fetchVolumes(`inauthor:"${authorName}"`, {
+  const volumes = await fetchVolumes(`inauthor:${authorName}`, {
     printType: "books",
+    orderBy: "newest",
+    maxResults: 40,
     ...options,
   })
   return volumes.map(normalizeVolume)
@@ -143,9 +145,12 @@ export async function searchAuthors(
   query: string,
   options?: SearchOptions
 ): Promise<NormalizedAuthor[]> {
-  const volumes = await fetchVolumes(`inauthor:${query}`, {
+  // Use an unquoted, unscoped query so partial name matches and newer
+  // publications are included even when metadata doesn’t perfectly match.
+  const volumes = await fetchVolumes(query, {
     maxResults: 40,
     printType: "books",
+    orderBy: "newest",
     ...options,
   })
 
