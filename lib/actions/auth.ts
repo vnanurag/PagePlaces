@@ -1,8 +1,10 @@
 "use server"
 
 import { signIn, signOut } from "@/auth"
+import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { hash } from "bcryptjs"
+
 import { prisma } from "@/lib/db"
 import { signInSchema, signUpSchema } from "@/lib/validations/auth"
 
@@ -83,20 +85,7 @@ export async function registerAction(
     return { formError: "Failed to create account. Please try again." }
   }
 
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/dashboard",
-    })
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { formError: "Account created. Please sign in." }
-    }
-    throw error
-  }
-
-  return null
+  redirect("/login?registered=true")
 }
 
 export async function logoutAction() {

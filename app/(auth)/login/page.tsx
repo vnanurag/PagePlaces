@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
 import { loginAction } from "@/lib/actions/auth"
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/input"
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAction, null)
+  const searchParams = useSearchParams()
+  const registered = searchParams.get("registered") === "true"
 
   return (
     <div className="w-full max-w-sm">
@@ -26,6 +29,11 @@ export default function LoginPage() {
 
       <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <form action={formAction} className="space-y-4">
+          {registered && (
+            <p role="status" className="rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-700 dark:bg-green-950/40 dark:text-green-400">
+              Account created — sign in below.
+            </p>
+          )}
           {state?.formError && (
             <p
               role="alert"
