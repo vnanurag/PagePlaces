@@ -145,9 +145,9 @@ export async function searchAuthors(
   query: string,
   options?: SearchOptions
 ): Promise<NormalizedAuthor[]> {
-  // Use an unquoted, unscoped query so partial name matches and newer
-  // publications are included even when metadata doesn’t perfectly match.
-  const volumes = await fetchVolumes(query, {
+  // inauthor: without quotes — scoped to the author field but permissive on
+  // partial name matches. Avoids returning biographies *about* the author.
+  const volumes = await fetchVolumes(`inauthor:${query}`, {
     maxResults: 40,
     printType: "books",
     orderBy: "newest",
