@@ -19,6 +19,7 @@ export function AppHeader({ userEmail, userName }: AppHeaderProps) {
 
         <NavLinks />
 
+        {/* AUTH UI — uncomment to re-enable sign out
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden text-xs text-muted-foreground sm:block">
             {userName ?? userEmail}
@@ -29,6 +30,7 @@ export function AppHeader({ userEmail, userName }: AppHeaderProps) {
             </Button>
           </form>
         </div>
+        */}
       </div>
     </header>
   )

@@ -1,7 +1,5 @@
 import Link from "next/link"
-import { auth } from "@/auth"
 import { BookMarked, Search, Library, MapPin, ArrowRight } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
 
 const FEATURES = [
   {
@@ -25,9 +23,6 @@ const FEATURES = [
 ]
 
 export default async function Home() {
-  const session = await auth()
-  const isLoggedIn = !!session?.user
-
   return (
     <div className="flex h-full flex-col bg-background">
       {/* ── Nav ── */}
@@ -37,22 +32,9 @@ export default async function Home() {
             <BookMarked className="size-4" aria-hidden="true" />
             PagePlaces
           </span>
-          <div className="flex items-center gap-2">
-            {isLoggedIn ? (
-              <Link href="/dashboard" className={buttonVariants({ size: "sm" })}>
-                Go to app
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                  Sign in
-                </Link>
-                <Link href="/register" className={buttonVariants({ size: "sm" })}>
-                  Get started
-                </Link>
-              </>
-            )}
-          </div>
+          <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Open app →
+          </Link>
         </div>
       </header>
 
@@ -70,13 +52,6 @@ export default async function Home() {
             Build your personal library and pin the exact spots where you
             bought, received, gifted, or read each book.
           </p>
-          {isLoggedIn && (
-            <div className="mt-5 flex justify-center">
-              <Link href="/dashboard" className={buttonVariants({ size: "sm" })}>
-                Go to dashboard <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-          )}
         </section>
 
         {/* ── Features ── */}

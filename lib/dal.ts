@@ -7,9 +7,12 @@ import { auth } from "@/auth"
  * Use this in Server Components and Server Actions that require auth.
  */
 export async function verifySession() {
-  const session = await auth()
-  if (!session?.user?.id) redirect("/login")
-  return session as typeof session & { user: { id: string } }
+  // AUTH BYPASS — remove the mock below and uncomment the real check to re-enable auth
+  return { user: { id: "dev-bypass", email: "dev@bypass.local", name: "Dev" } } as any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  // const session = await auth()
+  // if (!session?.user?.id) redirect("/login")
+  // return session as typeof session & { user: { id: string } }
 }
 
 /**
