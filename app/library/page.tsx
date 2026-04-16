@@ -3,8 +3,6 @@ import { prisma } from "@/lib/db"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { BookGrid, BookGridSkeleton, type LibraryBook } from "@/components/library/BookGrid"
 
-export const dynamic = "force-dynamic"
-
 // ─────────────────────────────────────────────
 // Page
 // ─────────────────────────────────────────────

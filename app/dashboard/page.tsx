@@ -2,8 +2,6 @@ import { prisma } from "@/lib/db"
 import { AppHeader } from "@/components/layout/AppHeader"
 import { BookSearch } from "@/components/dashboard/BookSearch"
 
-export const dynamic = "force-dynamic"
-
 export default async function DashboardPage() {
   const userBooks = await prisma.userBook.findMany({
     select: { id: true, book: { select: { googleId: true } } },
