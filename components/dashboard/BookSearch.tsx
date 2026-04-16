@@ -24,6 +24,7 @@ import type { ApiResponse, NormalizedAuthor, NormalizedBook } from "@/lib/types"
 // ─────────────────────────────────────────────
 
 type SearchMode = "author" | "title"
+type SearchSource = "openlibrary" | "google"
 type SearchStatus = "idle" | "loading" | "error" | "done"
 type SaveStatus = "idle" | "saving" | "error"
 
@@ -42,6 +43,7 @@ interface BookSearchProps {
 
 export function BookSearch({ initialSavedMap }: BookSearchProps) {
   const [mode, setMode] = useState<SearchMode>("author")
+  const [source, setSource] = useState<SearchSource>("openlibrary")
   const [query, setQuery] = useState("")
   const [authorResults, setAuthorResults] = useState<NormalizedAuthor[]>([])
   const [bookResults, setBookResults] = useState<NormalizedBook[]>([])
@@ -57,7 +59,7 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
-  const doSearch = useCallback(async (q: string, currentMode: SearchMode) => {
+  const doSearch = useCallback(async (q: string, currentMode: SearchMode, currentSource: SearchSource) => {
     if (q.trim().length < 2) {
       setAuthorResults([])
       setBookResults([])
@@ -73,8 +75,10 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
     setErrorMsg(null)
 
     try {
-      const url =
-        currentMode === "author"
+      const isOL = currentSource === "openlibrary"
+      const url = isOL
+        ? `/api/open-library?mode=${currentMode}&q=${encodeURIComponent(q.trim())}&maxResults=20`
+        : currentMode === "author"
           ? `/api/google-books/authors?q=${encodeURIComponent(q.trim())}`
           : `/api/google-books/search?q=${encodeURIComponent(q.trim())}&maxResults=20`
 
@@ -104,15 +108,23 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => doSearch(query, mode), 400)
+    debounceRef.current = setTimeout(() => doSearch(query, mode, source), 400)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [query, mode, doSearch])
+  }, [query, mode, source, doSearch])
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
   // Reset results when mode switches
   const handleModeChange = (newMode: SearchMode) => {
     setMode(newMode)
+    setAuthorResults([])
+    setBookResults([])
+    setStatus(query.trim().length >= 2 ? "loading" : "idle")
+  }
+
+  // Reset results when source switches
+  const handleSourceChange = (newSource: SearchSource) => {
+    setSource(newSource)
     setAuthorResults([])
     setBookResults([])
     setStatus(query.trim().length >= 2 ? "loading" : "idle")
@@ -158,9 +170,9 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
 
   return (
     <div className="space-y-5">
-      {/* Mode toggle + search bar */}
+      {/* Controls row */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        {/* Toggle */}
+        {/* Mode toggle */}
         <div className="flex shrink-0 rounded-lg border border-border bg-muted/50 p-0.5">
           {(["author", "title"] as SearchMode[]).map((m) => (
             <button
@@ -173,6 +185,23 @@ export function BookSearch({ initialSavedMap }: BookSearchProps) {
               }`}
             >
               {m === "author" ? "By Author" : "By Title"}
+            </button>
+          ))}
+        </div>
+
+        {/* Source toggle */}
+        <div className="flex shrink-0 rounded-lg border border-border bg-muted/50 p-0.5">
+          {(["openlibrary", "google"] as SearchSource[]).map((s) => (
+            <button
+              key={s}
+              onClick={() => handleSourceChange(s)}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
+                source === s
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {s === "openlibrary" ? "Open Library" : "Google Books"}
             </button>
           ))}
         </div>
