@@ -65,7 +65,7 @@ export default async function Home() {
 
       <main className="flex flex-1 flex-col">
         {/* ── Hero ── */}
-        <section className="mx-auto w-full max-w-5xl px-4 py-20 text-center sm:py-28">
+        <section className="mx-auto w-full max-w-5xl px-4 py-12 text-center sm:py-16">
           <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
             <MapPin className="size-3" aria-hidden="true" />
             Track every book&apos;s journey
@@ -98,8 +98,8 @@ export default async function Home() {
 
         {/* ── Features ── */}
         <section className="border-t border-border bg-muted/30">
-          <div className="mx-auto max-w-5xl px-4 py-16">
-            <h2 className="mb-10 text-center text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="mx-auto max-w-5xl px-4 py-10">
+            <h2 className="mb-6 text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
               Features
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -107,10 +107,10 @@ export default async function Home() {
                 <Link
                   key={title}
                   href={href}
-                  className="group flex flex-col gap-4 rounded-xl border border-border bg-card p-6 transition-all hover:border-border/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2"
+                  className="group flex flex-col gap-3 rounded-xl border border-border bg-card p-5 transition-all hover:border-border/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2"
                 >
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-foreground/[0.06]">
-                    <Icon className="size-5 text-foreground" aria-hidden="true" />
+                  <div className="flex size-8 items-center justify-center rounded-md bg-foreground/[0.06]">
+                    <Icon className="size-4 text-foreground" aria-hidden="true" />
                   </div>
                   <div className="flex flex-1 flex-col gap-1.5">
                     <h3 className="font-semibold tracking-tight">{title}</h3>
@@ -130,7 +130,7 @@ export default async function Home() {
         {/* ── CTA banner ── */}
         {!isLoggedIn && (
           <section className="border-t border-border">
-            <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-16 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
               <div>
                 <p className="text-lg font-semibold tracking-tight">
                   Ready to start tracking?

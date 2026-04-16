@@ -18,8 +18,8 @@ export default async function LibraryPage() {
         userName={session.user.name}
       />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-        <div className="mb-8">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5">
+        <div className="mb-5">
           <h1 className="text-xl font-semibold tracking-tight">My Library</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             All books you&apos;ve saved
